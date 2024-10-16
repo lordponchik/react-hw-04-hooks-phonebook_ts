@@ -26,6 +26,13 @@ export default function ContactForm({ creationContact }: Props) {
     evt.preventDefault();
 
     creationContact(name, number);
+
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setName('');
+    setNumber('');
   };
 
   return (

@@ -53,15 +53,13 @@ export default function App() {
     setContacts([...contacts].filter(({ id }) => id !== contactID));
   };
 
-  const getVisibleContacts = () => {
+  const getVisibleContacts = (() => {
     const normalizedFilter = filter.toLowerCase();
 
     return [...contacts].filter(({ name }) => {
       return (name as string).toLowerCase().includes(normalizedFilter);
     });
-  };
-
-  const visibleContacts = getVisibleContacts();
+  })();
 
   return (
     <div className={style.app}>
@@ -69,8 +67,8 @@ export default function App() {
       <ContactForm creationContact={creationContact} />
       <h2 className={style.title}>Contacts</h2>
       <Filter filter={filter} handleFilter={handleFilter} />
-      {visibleContacts.length > 0 ? (
-        <ContactList contacts={visibleContacts} deleteContact={deleteContact} />
+      {getVisibleContacts.length > 0 ? (
+        <ContactList contacts={getVisibleContacts} deleteContact={deleteContact} />
       ) : (
         <Notification notice={'Not contacts found'} />
       )}
