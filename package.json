@@ -1,6 +1,6 @@
 {
-  "name": "react-hw-02-phonebook_ts",
-  "homepage": "https://lordponchik.github.io/react-hw-03-phonebook_ts",
+  "name": "react-hw-04-hooks-phonebook_ts",
+  "homepage": "https://lordponchik.github.io/react-hw-04-hooks-phonebook_ts",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
