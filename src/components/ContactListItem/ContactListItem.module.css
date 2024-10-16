@@ -1,0 +1,7 @@
+.contact {
+  display: flex;
+  justify-content: space-between;
+}
+.contact:not(:last-child) {
+  margin-bottom: 10px;
+}

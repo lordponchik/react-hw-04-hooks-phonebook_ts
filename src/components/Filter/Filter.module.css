@@ -1,0 +1,11 @@
+.filter {
+  margin-bottom: 15px;
+}
+
+.title {
+  margin-bottom: 5px;
+}
+.input {
+  width: 250px;
+  box-sizing: border-box;
+}

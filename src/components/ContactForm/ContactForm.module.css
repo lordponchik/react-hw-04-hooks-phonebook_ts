@@ -1,0 +1,12 @@
+.form {
+  margin-bottom: 15px;
+}
+
+.formInputWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+}
+.formInputWrapper:not(:last-child) {
+  margin-bottom: 10px;
+}
