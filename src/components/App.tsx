@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import style from './App.module.css';
 
@@ -9,89 +9,71 @@ import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList';
 import Notification from './Notification/Notification';
 
-interface State {
-  contacts: IContact[];
-  filter: string;
-}
-
 const CONTACTS: string = 'contacts';
 
-class App extends Component<{}, State> {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export default function App() {
+  const [contacts, setContacts] = useState<IContact[]>(() => {
+    const localContacts = window.localStorage.getItem(CONTACTS);
+    return localContacts ? JSON.parse(localContacts) : [];
+  });
+  const [filter, setFilter] = useState<string>('');
+  const isFirstRender = useRef(true);
 
-  componentDidMount(): void {
-    const localContacts = localStorage.getItem(CONTACTS);
-
-    if (localContacts) {
-      this.setState({ contacts: JSON.parse(localContacts) });
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }
 
-  componentDidUpdate(prevState: State): void {
-    const { contacts } = this.state;
+    window.localStorage.setItem(CONTACTS, JSON.stringify(contacts));
+  }, [contacts]);
 
-    if (prevState.contacts !== contacts) {
-      localStorage.setItem(CONTACTS, JSON.stringify(contacts));
-    }
-  }
-
-  creationContact = (name: string, number: string) => {
+  const creationContact = (name: string, number: string) => {
     const contact: IContact = {
       name: name,
       number: number,
       id: nanoid(),
     };
 
-    if (this.state.contacts.some((contact: IContact) => contact.name === name)) {
+    if (contacts.some((contact: IContact) => contact.name === name)) {
       alert(`${name} is already in contacts`);
       return;
     }
 
-    this.setState(prev => ({
-      contacts: [...prev.contacts, contact],
-    }));
+    setContacts(prevContacts => [...prevContacts, contact]);
   };
 
-  handleFilter = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFilter = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = evt.currentTarget;
 
-    this.setState({ filter: value });
+    setFilter(value);
   };
 
-  deleteContact = (contactID: string) => {
-    this.setState(prevEvent => ({
-      contacts: prevEvent.contacts.filter(({ id }) => id !== contactID),
-    }));
+  const deleteContact = (contactID: string) => {
+    setContacts([...contacts].filter(({ id }) => id !== contactID));
   };
 
-  getVisibleContacts = () => {
-    const normalizedFilter = this.state.filter.toLowerCase();
+  const getVisibleContacts = () => {
+    const normalizedFilter = filter.toLowerCase();
 
-    return this.state.contacts.filter(({ name }) => {
+    return [...contacts].filter(({ name }) => {
       return (name as string).toLowerCase().includes(normalizedFilter);
     });
   };
 
-  render() {
-    const visibleContacts = this.getVisibleContacts();
+  const visibleContacts = getVisibleContacts();
 
-    return (
-      <div className={style.app}>
-        <h1 className={style.title}>Phonebook</h1>
-        <ContactForm creationContact={this.creationContact} />
-        <h2 className={style.title}>Contacts</h2>
-        <Filter filter={this.state.filter} handleFilter={this.handleFilter} />
-        {visibleContacts.length > 0 ? (
-          <ContactList contacts={visibleContacts} deleteContact={this.deleteContact} />
-        ) : (
-          <Notification notice={'Not contacts found'} />
-        )}
-      </div>
-    );
-  }
+  return (
+    <div className={style.app}>
+      <h1 className={style.title}>Phonebook</h1>
+      <ContactForm creationContact={creationContact} />
+      <h2 className={style.title}>Contacts</h2>
+      <Filter filter={filter} handleFilter={handleFilter} />
+      {visibleContacts.length > 0 ? (
+        <ContactList contacts={visibleContacts} deleteContact={deleteContact} />
+      ) : (
+        <Notification notice={'Not contacts found'} />
+      )}
+    </div>
+  );
 }
-
-export default App;
